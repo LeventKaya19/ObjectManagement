@@ -5,21 +5,28 @@ using UnityEngine.SceneManagement;
 
 public class Game : PersistableObject
 {
-    public ShapeFactory shapeFactory;
-    public KeyCode createKey = KeyCode.C;
-    public KeyCode newGameKey = KeyCode.N;
-    public KeyCode saveKey = KeyCode.S;
-    public KeyCode loadKey = KeyCode.L;
-    public KeyCode destroyKey = KeyCode.X;
+    [SerializeField] ShapeFactory shapeFactory;
+    [SerializeField] KeyCode createKey = KeyCode.C;
+    [SerializeField] KeyCode newGameKey = KeyCode.N;
+    [SerializeField] KeyCode saveKey = KeyCode.S;
+    [SerializeField] KeyCode loadKey = KeyCode.L;
+    [SerializeField] KeyCode destroyKey = KeyCode.X;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
-    public PersistentStorage storage;
-    public int levelCount;
+    [SerializeField] PersistentStorage storage;
+    [SerializeField] int levelCount;
+    public SpawnZone SpawnZoneOfLevel { get; set; }
+    public static Game Instance{ get; private set;}
 
     int loadedLevelBuildIndex;
     const int saveVersion = 2;
     float creationProgress, destructionProgress;
     List<Shape> shapes;
+
+    private void OnEnable()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -124,7 +131,7 @@ public class Game : PersistableObject
     {
         Shape instance = shapeFactory.GetRandom();
         Transform t = instance.transform;
-        t.localPosition = Random.insideUnitSphere * 5f;
+        t.localPosition = SpawnZoneOfLevel.SpawnPoint;
         t.localRotation = Random.rotation;
         t.localScale = Vector3.one * Random.Range(0.1f, 1f);
         instance.SetColor(Random.ColorHSV(hueMin: 0f, hueMax: 1f,
